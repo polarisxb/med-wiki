@@ -1,0 +1,185 @@
+{
+  "plant-type": {
+    "name": "植物种类分类",
+    "children": [
+      {
+        "id": "pt1",
+        "name": "被子植物",
+        "children": [
+          {
+            "id": "pt1-1",
+            "name": "双子叶植物",
+            "herbs": [
+              "qinghao", "yimucao", "xinjiangji", "nihucai",
+              "feipeng", "malan", "juhua", "jinjiju",
+              "qiuying", "pugongying", "niubang", "lichang",
+              "jumaicai", "xiaopengcao", "huanghuahao", "huangancai",
+              "wosun", "xiangrikui", "feilian", "baitoupo",
+              "zimuxu", "kushen", "huzhizi", "ziquehua",
+              "zisuihuai", "zaojia", "shanjingzi", "huangcimei",
+              "chuisihaitang", "meigui", "shantao", "haitanghua",
+              "duxingcai", "ji", "ximi", "hancai",
+              "tangjie", "zhugecai", "danshen", "shuweicao",
+              "xiazhicao", "midiexiang", "lieyejingjie", "heshi",
+              "dunguocao", "houkeshu", "wuwangcao", "poshu",
+              "jushu", "yushu", "dijincao","youtong", "zihuadiding",
+               "ruyicao", "banbianlian", "shashen", "li", "difu", 
+               "suanmoyeliao", "bianxu", "xueliu", "nvzhen", "zhuyangyang", 
+               "xiangguoshu", "baiying", "tianxianzi", "sang", "putishu",
+                "shidagonglao", "ziyexiaobo", "zhang", "wugenteng", 
+                "langdu", "shechuang", "cheqian", "dijin", "lianzicao",
+                 "babao", "choumudan", "shazao", "ludimian", "luomo", 
+                 "baochunhua", "laoguancao", "yunshan", "huangyang", 
+                 "ziwei", "lanhuacao", "mailancai", "cujiangcao", 
+                 "yangshu", "huanglan", "daguowuweizi", "baiqucai", 
+                 "simianmu", "bairuicao", "zi", "guangyezihua", 
+                 "cenyeqi", "huojushu", "tianxuanhua", "kushu"
+          ]  
+          },
+          {
+            "id": "pt1-2",
+            "name": "单子叶植物",
+            "herbs": ["tianmendong", "wenzhu", "baihe", "luhui", "niujincao", "heimacao", "dengxincao", "xiangfuzi"]
+          }
+        ]
+      },
+      {
+        "id": "pt2",
+        "name": "裸子植物和蕨类植物",
+        "children": [
+          {
+            "id": "pt2-1",
+            "name": "裸子植物",
+            "herbs": ["yinxing", "xinjiangwuzhensong"]
+          },
+          {
+            "id": "pt2-2",
+            "name": "蕨类植物",
+            "herbs": ["tiejiaojue", "jue"]
+          }
+        ]
+      }
+    ]
+  },
+  "medicinal": {
+    "name": "药用价值分类",
+    "children": [
+      {
+        "id": "mv1",
+        "name": "药用部位",
+        "children": [
+          {
+            "id": "mv1-1",
+            "name": "全草",
+            "herbs": ["qinghao", "pugongying", "nihucai", "lichang", "jumaicai", 
+            "xiaopengcao", "huanghuahao", "malan", "huangancai", "feilian", 
+            "qiuying", "baitoupo", "zimuxu", "duxingcai", "ji", "ximi", 
+            "hancai", "tangjie", "shuweicao", "xiazhicao", "midiexiang", 
+            "lieyejingjie", "dunguocao", "wuwangcao", "dijincao", "zihuadiding", 
+            "ruyicao", "banbianlian", "li", "suanmoyeliao", "bianxu", "zhuyangyang", 
+            "baiying", "tianxianzi", "wugenteng", "babao", "laoguancao", "cujiangcao", 
+            "baiqucai", "bairuicao", "tianxuanhua", "niujincao", "xinjiangwuzhensong", "tiejiaojue"] 
+          },
+          {
+            "id": "mv1-2",
+            "name": "根部（包括根茎及根皮）",
+            "herbs": ["niubang", "malan", "huangancai", "xiangrikui", "feilian", "kushen",
+             "huzhizi", "ziquehua", "zisuihuai", "zaojia", "huangcimei", "meigui",
+              "haitanghua", "zhugecai", "danshen", "poshu", "youtong", "shashen", 
+              "suanmoyeliao", "xueliu", "xiangguoshu", "baiying", "sang", "zhang", "langdu", 
+              "dijin", "choumudan", "ludimian", "huangyang", "ziwei", "huanglan", "simianmu",
+               "zi", "kushu", "tianmendong", "wenzhu","xiangfuzi"]
+          },
+          {
+            "id": "mv1-3",
+            "name": "果实（包括花序托、果壳），种子",
+            "herbs": ["niubang", "feipeng", "xiangrikui", "zaojia", "shanjingzi", 
+            "huangcimei", "shantao", "ximi", "tangjie", "yimucao", "heshi", 
+            "yushu", "youtong", "difu", "nvzhen", "sang", "zhang", "shechuang", 
+            "shazao", "ludimian", "yunshan", "mailancai", "huanglan", "daguowuweizi",
+             "zi", "heimacao", "juhua", "jinjiju"]
+          },
+          {
+            "id": "mv1-4",
+            "name": "叶",
+            "herbs": ["wosun", "xiangrikui", "zaojia", "zhugecai", "houkeshu", 
+            "poshu", "jushu", "yushu", "youtong", "xueliu", "nvzhen", "zhang",
+             "choumudan", "huangyang", "simianmu", "luhui", "yinxing"]
+          },
+          {
+            "id": "mv1-5",
+            "name": "花",
+            "herbs": ["feipeng", "ziquehua", "huangcimei", "chuisihaitang", 
+            "meigui", "yimucao", "lieyejingjie", "youtong", "putishu",
+             "baochunhua", "guangyezihua", "luhui", "heimacao", "juhua", "jinjiju"]
+          },
+          {
+            "id": "mv1-6",
+            "name": "全株",
+            "herbs": ["shidagonglao", "luomo", "lianzicao", "cheqian", "jue"]
+          }
+        ]
+      },
+      {
+        "id": "mv2",
+        "name": "药用功效",
+        "children": [
+          {
+            "id": "mv2-1",
+            "name": "清热解毒类",
+            "herbs": ["pugongying", "niubang", "nihucai", "jumaicai", "malan", "huangancai",
+             "wosun", "qiuying", "ximi", "hancai", "wuwangcao", "dijincao", "zihuadiding",
+              "ruyicao", "banbianlian", "bianxu", "xueliu", "zhuyangyang", "baiying",
+               "shidagonglao", "babao", "niujincao", "tiejiaojue"] 
+          },
+          {
+            "id": "mv2-2",
+            "name": "利尿类",
+            "herbs": ["huanghuahao", "huangancai", "wosun", "xiangrikui", 
+            "zimuxu", "ji", "tangjie", "yimucao", "xiazhicao", "dijincao",
+             "banbianlian", "difu", "bianxu", "zhuyangyang", "wugenteng", 
+             "cujiangcao", "baiqucai", "zi", "baihe", "dengxincao", "jue"]
+          },
+          {
+            "id": "mv2-3",
+            "name": "祛风湿类",
+            "herbs": ["qinghao", "xiaopengcao", "zisuihuai", "zaojia", 
+            "zhang", "shechuang", "choumudan", "xinjiangwuzhensong", "jue"]
+          },
+          {
+            "id": "mv2-4",
+            "name": "止血类",
+            "herbs": ["lichang", "xiaopengcao", "malan", "feilian", "huangcimei",
+             "dijincao", "shazao", "baochunhua", "ziwei", "niujincao", "tiejiaojue","ji"]
+          },
+          {
+            "id": "mv2-5",
+            "name": "止咳平喘类",
+            "herbs": ["xiangrikui", "ziquehua", "huangcimei", "haitanghua", "hancai", 
+            "shashen", "putishu", "ludimian", "yunshan", "tianmendong", "wenzhu", "baihe", "yinxing"]
+          },
+          {
+            "id": "mv2-6",
+            "name": "活血及和血类",
+            "herbs": ["ziquehua", "chuisihaitang", "meigui", "shantao", "yimucao", "danshen", 
+            "shuweicao", "xiazhicao", "putishu", "zhang", "dijin", "ludimian", 
+            "huangyang", "ziwei", "guangyezihua", "tianxuanhua", "heimacao", "yinxing"]
+          },
+          {
+            "id": "mv2-7",
+            "name": "健胃类",
+            "herbs": ["huanghuahao", "zimuxu", "kushen", "huangcimei", 
+            "hancai", "tangjie", "zhugecai", "midiexiang", "xiangguoshu", "huanglan"]
+          },
+          {
+            "id": "mv2-8",
+            "name": "止痛类",
+            "herbs": ["xiangrikui", "lieyejingjie", "dunguocao", "poshu", "nvzhen", "tianxianzi", "zhang",
+             "langdu", "dijin", "choumudan","shazao", "luomo", "huanglan", "baiqucai", "simianmu", "luhui", 
+             "xiangfuzi", "yinxing"]
+          }
+        ]
+      }
+    ]
+  }
+}
