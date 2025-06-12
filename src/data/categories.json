@@ -181,5 +181,94 @@
         ]
       }
     ]
+  },
+  "location": {
+    "name": "按地点分类",
+    "children": [
+      {
+        "id": "location-1",
+        "name": "20号宿舍楼旁",
+        "herbs": ["baiqucai", "huangancai", "malan", "tangjie", "wosun", "yinxing"]
+      },
+      {
+        "id": "location-2",
+        "name": "新疆农大图书馆旁",
+        "herbs": ["baitoupo", "babao", "choumudan", "cenyeqi", "difu", "guangyezihua",
+          "houkeshu", "huojushu", "jinjiju", "putishu", "tianxuanhua", "zaojia",
+          "zisuihuai"]
+      },
+      {
+        "id": "location-3",
+        "name": "14号宿舍楼旁",
+        "herbs": ["baiying", "baochunhua", "dijin", "dijincao", "feipeng", "huzhizi",
+          "laoguancao", "li", "lichang", "lianzicao", "tianxianzi", "ximi",
+          "xiangfuzi"]
+      },
+      {
+        "id": "location-4",
+        "name": "15号宿舍楼旁",
+        "herbs": ["baihe", "chuisihaitang", "huangcimei", "huangyang", "meigui", "midiexiang",
+          "yunshan"]
+      },
+      {
+        "id": "location-5",
+        "name": "禾园餐厅旁",
+        "herbs": ["bairuicao", "kushen", "tianmendong", "zhuyangyang", "zi", "ziquehua"]
+      },
+      {
+        "id": "location-6",
+        "name": "11号宿舍楼旁",
+        "herbs": ["banbianlian", "cheqian", "hancai", "huanghuahao", "luomo", "nihucai",
+          "ruyicao", "tiejiaojue", "xiangguoshu", "zihuadiding", "zimuxu"]
+      },
+      {
+        "id": "location-7",
+        "name": "17号宿舍楼旁",
+        "herbs": ["bianxu", "daguowuweizi", "huanglan", "jumaicai", "niujincao", "nvzhen",
+          "sang", "shantao", "shidagonglao", "youtong", "zhang", "ziyexiaobo"]
+      },
+      {
+        "id": "location-8",
+        "name": "1号宿舍楼旁",
+        "herbs": ["danshen", "dengxincao", "heshi", "pugongying", "qinghao", "shechuang",
+          "shuweicao", "yimucao"]
+      },
+      {
+        "id": "location-9",
+        "name": "8号宿舍楼旁",
+        "herbs": ["duxingcai", "ji", "jushu", "langdu", "ludimian", "niubang",
+          "poshu", "shanjingzi", "suanmoyeliao", "wenzhu", "xiazhicao", "xinjiangji"]
+      },
+      {
+        "id": "location-10",
+        "name": "学苑餐厅旁",
+        "herbs": ["dunguocao", "shashen", "xueliu"]
+      },
+      {
+        "id": "location-11",
+        "name": "农大北门附近",
+        "herbs": ["feilian", "kushu", "lieyejingjie", "qiuying", "wugenteng", "wuwangcao"]
+      },
+      {
+        "id": "location-12",
+        "name": "农大派出所旁",
+        "herbs": ["haitanghua", "heimacao", "jue", "simianmu", "yushu"]
+      },
+      {
+        "id": "location-13",
+        "name": "机电工程学院前",
+        "herbs": ["juhua", "xiangrikui", "xiaopengcao", "xinjiangwuzhensong", "zhugecai"]
+      },
+      {
+        "id": "location-14",
+        "name": "16号宿舍楼旁",
+        "herbs": ["lanhuacao", "mailancai", "yangshu", "ziwei", "cujiangcao"]
+      },
+      {
+        "id": "location-15",
+        "name": "学士餐厅旁",
+        "herbs": ["shazao"]
+      }
+    ]
   }
 }

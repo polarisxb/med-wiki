@@ -83,7 +83,7 @@
 
     <!-- 导航区块 -->
     <section class="features-section">
-      <h2 class="section-title">探索中药材世界</h2>
+      <h2 class="section-title">探索农大的药用植物</h2>
       <div class="feature-grid">
         <router-link 
           to="/category/plant-type" 
@@ -112,6 +112,21 @@
             </div>
             <h3>按功效检索</h3>
             <p>清热解毒、活血化瘀等功效分类</p>
+          </div>
+        </router-link>
+
+        <router-link 
+          to="/location-map" 
+          class="feature-card location"
+        >
+          <div class="card-content">
+            <div class="icon-wrapper">
+              <svg class="feature-icon" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+            </div>
+            <h3>按地点浏览</h3>
+            <p>药用植物园、温室、教学楼附近等地点</p>
           </div>
         </router-link>
       </div>
@@ -457,6 +472,10 @@ const goToDetail = (id) => {
 
 .feature-card.medicinal {
   background: linear-gradient(135deg, #fbe9e7, #ffccbc);
+}
+
+.feature-card.location {
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
 }
 
 .icon-wrapper {
