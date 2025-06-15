@@ -25,15 +25,71 @@
 
     <!-- 图片展示 -->
     <section class="image-gallery">
-      <img
-          v-for="(img, index) in herb.images"
-          :key="index"
-          :src="resolveImage(img)"
-          :alt="herb.name"
-          class="herb-image"
-          @error="handleImageError"
-      >
+      <div class="gallery-container">
+        <!-- 图片卡片 -->
+        <div 
+          v-for="(img, index) in herb.images" 
+          :key="index" 
+          class="gallery-card image-card"
+          @click="openLightbox(index)"
+        >
+          <div class="card-content">
+            <img
+              :src="resolveImage(img)"
+              :alt="herb.name"
+              class="herb-image"
+              @error="handleImageError"
+              @load="onImageLoad"
+            >
+            <div class="image-overlay">
+              <span class="zoom-icon">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                  <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 位置信息卡片 -->
+        <div v-if="herb.location" class="gallery-card location-card">
+          <div class="card-content">
+            <h3 class="location-title">
+              <i class="fas fa-map-marker-alt location-icon"></i>
+              药材位置信息
+            </h3>
+            <div class="location-content">
+              <!-- 如果 location 是一个数组，则遍历显示每条信息 -->
+              <template v-if="Array.isArray(herb.location)">
+                <p v-for="(loc, idx) in herb.location" :key="idx" class="location-text">{{ loc }}</p>
+              </template>
+              <!-- 否则，直接显示 location 字符串 -->
+              <template v-else>
+                <p class="location-text">{{ herb.location }}</p>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
+    
+    <!-- 图片查看器 -->
+    <div v-if="lightboxOpen" class="lightbox" @click="closeLightbox">
+      <div class="lightbox-content" @click.stop>
+        <button class="lightbox-close" @click="closeLightbox">&times;</button>
+        <button v-if="currentImageIndex > 0" class="lightbox-nav lightbox-prev" @click="prevImage">&lsaquo;</button>
+        <img
+          :src="resolveImage(herb.images[currentImageIndex])"
+          :alt="herb.name"
+          class="lightbox-image"
+          @error="handleImageError"
+        >
+        <button v-if="currentImageIndex < herb.images.length - 1" class="lightbox-nav lightbox-next" @click="nextImage">&rsaquo;</button>
+        <div class="lightbox-counter">{{ currentImageIndex + 1 }} / {{ herb.images.length }}</div>
+      </div>
+    </div>
+
+
 
     <!-- 主要信息区域 -->
     <main class="info-sections-wrapper">
@@ -107,11 +163,13 @@
                 </div>
               </template>
               <template v-else>
-                <ul class="effect-list">
-                  <li v-for="(effect, idx) in herb.effects" :key="idx" class="effect-item">
-                    <i class="fas fa-check-circle effect-icon"></i>{{ effect }}
-                  </li>
-                </ul>
+                <div class="effect-group">
+                  <ul class="effect-list">
+                    <li v-for="(effect, idx) in herb.effects" :key="idx" class="effect-item">
+                      <i class="fas fa-check-circle effect-icon"></i>{{ effect }}
+                    </li>
+                  </ul>
+                </div>
               </template>
             </div>
           </div>
@@ -126,7 +184,9 @@
                 </div>
               </template>
               <template v-else>
-                <p class="function-desc">{{ herb.functions }}</p>
+                <div class="function-group">
+                  <p class="function-desc">{{ herb.functions }}</p>
+                </div>
               </template>
             </div>
           </div>
@@ -165,23 +225,7 @@
         </div>
       </section>
 
-      <!-- 药材位置信息区块 (字段名改为 location) -->
-      <section v-if="herb.location" class="info-block location-info">
-        <h2 class="info-title">
-          <i class="fas fa-map-marker-alt info-icon location-icon"></i>
-          药材位置信息
-        </h2>
-        <div class="location-details">
-          <!-- 如果 location 是一个数组，则遍历显示每条信息 -->
-          <template v-if="Array.isArray(herb.location)">
-            <p v-for="(loc, idx) in herb.location" :key="idx">{{ loc }}</p>
-          </template>
-          <!-- 否则，直接显示 location 字符串 -->
-          <template v-else>
-            <p>{{ herb.location }}</p>
-          </template>
-        </div>
-      </section>
+
     </main>
 
     <router-link to="/" class="back-button">
@@ -212,6 +256,9 @@ import herbsData from '@/data/herbs.json'
 const route = useRoute()
 const herb = ref(null)
 const errorMsg = ref('')
+const lightboxOpen = ref(false)
+const currentImageIndex = ref(0)
+const imagesLoaded = ref(0)
 
 // 类型检测方法
 const isObject = (value) => {
@@ -263,6 +310,37 @@ const handleImageError = (e) => {
   e.target.src = defaultImage
 }
 
+// 图片加载完成处理
+const onImageLoad = () => {
+  imagesLoaded.value++
+}
+
+// 灯箱功能
+const openLightbox = (index) => {
+  currentImageIndex.value = index
+  lightboxOpen.value = true
+  // 阻止页面滚动
+  document.body.style.overflow = 'hidden'
+}
+
+const closeLightbox = () => {
+  lightboxOpen.value = false
+  // 恢复页面滚动
+  document.body.style.overflow = ''
+}
+
+const nextImage = () => {
+  if (currentImageIndex.value < herb.value.images.length - 1) {
+    currentImageIndex.value++
+  }
+}
+
+const prevImage = () => {
+  if (currentImageIndex.value > 0) {
+    currentImageIndex.value--
+  }
+}
+
 // 初始化加载
 onMounted(() => {
   try {
@@ -274,11 +352,19 @@ onMounted(() => {
     if (!herb.value) {
       throw new Error(`未找到ID为 "${route.params.id}" 的药材`)
     }
+    
+    // 图片加载后重新计算布局
+    window.addEventListener('resize', resizeAllMasonryItems)
   } catch (err) {
     errorMsg.value = `数据加载失败: ${err.message}`
     console.error('完整错误信息:', err)
   }
 })
+
+// 窗口大小变化时的处理函数
+const resizeAllMasonryItems = () => {
+  // 这个版本不需要动态调整高度
+}
 </script>
 
 <style scoped>
@@ -378,30 +464,254 @@ body {
 
 /* Image Gallery */
 .image-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 15px;
   margin: 35px 0;
-  padding: 8px;
-  background-color: #f0f0f0;
-  border-radius: var(--border-radius-medium);
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.07);
-  border: 1px solid var(--border-color-main);
+  padding: 24px;
+  background-color: #f5f7f9;
+  border-radius: 16px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e6ed;
+}
+
+.gallery-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.gallery-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+  background-color: #f9f9f9;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.gallery-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* 图片卡片样式 */
+.image-card {
+  cursor: pointer;
+  aspect-ratio: 4/3;
+}
+
+.image-card .card-content {
+  justify-content: center;
+  padding: 0;
+}
+
+/* 位置信息卡片样式 */
+.location-card {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #f0f7f0;
+  border-left: 4px solid #28a745;
+}
+
+.location-title {
+  font-family: 'Noto Serif SC', "Source Han Serif SC", serif;
+  font-size: 20px;
+  color: #2c3e50;
+  margin: 0;
+  text-align: left;
+  padding: 16px 20px;
+  background-color: rgba(40, 167, 69, 0.08);
+  border-bottom: 1px solid rgba(40, 167, 69, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.location-icon {
+  color: #28a745;
+  font-size: 18px;
+}
+
+.location-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.location-text {
+  font-style: normal;
+  color: #445566;
+  line-height: 1.6;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 3px solid #28a745;
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 992px) {
+  .gallery-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .gallery-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 .herb-image {
   width: 100%;
-  height: 250px;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--border-radius-small);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  cursor: pointer;
+  display: block;
+  transition: transform 0.3s ease-in-out;
+  border-radius: 12px;
 }
 
-.herb-image:hover {
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+.image-card:hover .herb-image {
+  transform: scale(1.05);
+}
+
+/* 图片悬停效果 */
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.image-card:hover .image-overlay {
+  opacity: 1;
+}
+
+.zoom-icon {
+  color: white;
+  background-color: rgba(40, 167, 69, 0.8);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  transform: scale(0.7);
+  transition: all 0.3s ease;
+}
+
+.zoom-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.image-card:hover .zoom-icon {
+  transform: scale(1);
+}
+
+
+
+/* Lightbox Styles */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  margin: auto;
+}
+
+.lightbox-image {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border: 2px solid white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -40px;
+  right: -10px;
+  font-size: 30px;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.lightbox-nav:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.lightbox-prev {
+  left: -60px;
+}
+
+.lightbox-next {
+  right: -60px;
+}
+
+.lightbox-counter {
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: white;
+  font-size: 14px;
 }
 
 /* Info Sections Wrapper */
@@ -496,15 +806,41 @@ body {
   line-height: 1.7;
   color: var(--medium-text);
   font-size: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
 }
 
 .description-item {
-  margin-bottom: 20px;
+  margin-bottom: 0;
   padding: 18px;
   background-color: #f4f8f3;
   border-radius: var(--border-radius-small);
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
-  border: 1px dashed var(--border-color-main);
+  border: 1px solid var(--primary-green);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.description-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  border-color: var(--secondary-brown);
+}
+
+.description-content {
+  padding: 18px;
+  background-color: #f4f8f3;
+  border-radius: var(--border-radius-small);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--primary-green);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  grid-column: 1 / -1;
+}
+
+.description-content:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  border-color: var(--secondary-brown);
 }
 
 .variant-title {
@@ -516,7 +852,8 @@ body {
 }
 
 .variant-content {
-  margin-left: 15px;
+  margin-left: 0;
+  margin-top: 10px;
 }
 
 /* Medical Info Grid */
@@ -537,7 +874,25 @@ body {
 }
 
 .effect-group, .function-group {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background-color: #f4f8f3;
+  border-radius: var(--border-radius-small);
+  border: 1px solid var(--primary-green);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.effect-group:hover, .function-group:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  border-color: var(--secondary-brown);
+}
+
+.effects-content, .functions-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .effect-type, .function-type {
@@ -551,6 +906,7 @@ body {
 .effect-list, .warning-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .effect-item, .warning-item {
@@ -577,50 +933,79 @@ body {
   font-size: 16px;
 }
 
+.function-desc {
+  margin: 0;
+}
+
 /* Dosage and Precautions Styles */
 .dosage-text {
   white-space: pre-wrap;
-  background-color: #dcf2dc;
+  background-color: #f4f8f3;
   padding: 20px;
   border-radius: var(--border-radius-small);
   font-family: 'Fira Code', 'Courier New', monospace;
   color: var(--dark-text);
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
   font-size: 15px;
-  border: 1px solid var(--border-color-main);
+  border: 1px solid var(--primary-green);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.dosage-text:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  border-color: var(--secondary-brown);
 }
 
 .warning-content {
   background-color: #fff4d0;
-  padding: 20px;
+  padding: 0;
   border-radius: var(--border-radius-small);
-  border: 1px solid var(--warning-yellow);
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  border: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .warning-group {
-  margin-bottom: 20px;
+  margin-bottom: 0;
+  padding: 15px;
+  background-color: #fff4d0;
+  border-radius: var(--border-radius-small);
+  border: 1px solid var(--warning-yellow);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.warning-group:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  border-color: var(--warning-red);
+}
+
+.warning-text {
+  padding: 15px;
+  background-color: #fff4d0;
+  border-radius: var(--border-radius-small);
+  border: 1px solid var(--warning-yellow);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  margin: 0;
+}
+
+.warning-text:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  border-color: var(--warning-red);
 }
 
 .warning-type {
   font-weight: 700;
-  color: var(--warning-yellow);
+  color: var(--warning-red);
   margin-bottom: 10px;
   display: block;
   font-size: 16px;
-}
-
-/* Location Info Styles */
-.location-info .location-details {
-  font-style: normal;
-  color: var(--medium-text);
-  background-color: #d1e9fa;
-  padding: 18px;
-  border-radius: var(--border-radius-small);
-  border: 1px solid var(--accent-blue);
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.07);
-  font-size: 16px;
-  line-height: 1.7;
 }
 
 /* Back Button */
@@ -699,15 +1084,13 @@ body {
     grid-template-areas:
       "basic-info description-info"
       "medical-info medical-info"
-      "dosage-info precautions-info"
-      "location-info location-info";
+      "dosage-info precautions-info";
   }
   .basic-info { grid-area: basic-info; }
   .description-info { grid-area: description-info; padding: 25px; }
   .medical-info { grid-area: medical-info; }
   .dosage-info { grid-area: dosage-info; }
   .precautions-info { grid-area: precautions-info; }
-  .location-info { grid-area: location-info; }
 }
 
 
@@ -730,13 +1113,36 @@ body {
   }
 
   .image-gallery {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    padding: 16px;
     margin: 25px 0;
   }
-
-  .herb-image {
-    height: 200px;
+  
+  .gallery-container {
+    gap: 18px;
+  }
+  
+  .zoom-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .zoom-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .lightbox-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+  
+  .lightbox-prev {
+    left: -45px;
+  }
+  
+  .lightbox-next {
+    right: -45px;
   }
 
   .info-block {
@@ -760,6 +1166,20 @@ body {
   .info-item {
     padding: 12px;
   }
+  
+  .description-text {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .description-item, 
+  .description-content,
+  .effect-group, 
+  .function-group,
+  .warning-group,
+  .warning-text {
+    padding: 12px;
+  }
 
   .medical-grid {
     grid-template-columns: 1fr;
@@ -771,10 +1191,26 @@ body {
   }
 
   .dosage-text,
-  .warning-content,
-  .location-info .location-details {
-    padding: 15px;
+  .warning-content {
     font-size: 14px;
+  }
+  
+  .dosage-text {
+    padding: 15px;
+  }
+  
+  .warning-content {
+    padding: 0;
+    gap: 12px;
+  }
+  
+  .location-title {
+    font-size: 18px;
+    padding: 14px 16px;
+  }
+  
+  .location-content {
+    padding: 14px 16px;
   }
 
   .back-button {
@@ -810,9 +1246,50 @@ body {
   .english-name {
     font-size: 12px;
   }
-
+  
+  .image-gallery {
+    padding: 12px;
+  }
+  
+  .gallery-container {
+    gap: 14px;
+  }
+  
+  .gallery-card {
+    border-radius: 10px;
+  }
+  
   .herb-image {
-    height: 160px;
+    border-radius: 10px;
+  }
+  
+  .image-overlay {
+    border-radius: 10px;
+  }
+  
+  .zoom-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .zoom-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .lightbox-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .lightbox-prev {
+    left: 10px;
+  }
+  
+  .lightbox-next {
+    right: 10px;
   }
 
   .info-block {
@@ -831,11 +1308,45 @@ body {
   .info-item {
     padding: 10px;
   }
+  
+  .description-text {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .description-item, 
+  .description-content,
+  .effect-group, 
+  .function-group,
+  .warning-group,
+  .warning-text {
+    padding: 10px;
+  }
+  
+  .warning-content {
+    gap: 10px;
+  }
 
-  .dosage-text,
-  .warning-content,
-  .location-info .location-details {
+  .dosage-text {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .warning-content {
+    padding: 0;
+  }
+  
+  .location-title {
+    font-size: 16px;
     padding: 12px;
+  }
+  
+  .location-content {
+    padding: 12px;
+  }
+  
+  .location-text {
+    padding: 10px;
     font-size: 13px;
   }
 

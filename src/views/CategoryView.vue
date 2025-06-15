@@ -112,17 +112,23 @@ const getHerbName = (id) => {
 <style scoped>
 .category-page {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 20px;
   min-height: 70vh;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .breadcrumb {
-  background: #f8f9fa;
+  background: rgba(248, 249, 250, 0.7);
   padding: 12px 20px;
   border-radius: 8px;
   margin-bottom: 30px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(76, 175, 80, 0.1);
 }
 
 .breadcrumb ol {
@@ -157,10 +163,11 @@ const getHerbName = (id) => {
 }
 
 .content {
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .page-title {
@@ -168,7 +175,8 @@ const getHerbName = (id) => {
   font-size: 24px;
   margin-bottom: 25px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid rgba(76, 175, 80, 0.3);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 h2 {
@@ -188,18 +196,19 @@ h2 {
 .herb-card {
   background: #fff;
   border: 1px solid #e9ecef;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 18px;
   text-align: center;
-  transition: all 0.2s;
+  transition: all 0.3s;
   text-decoration: none;
   color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .category-card:hover,
 .herb-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+  box-shadow: 0 8px 15px rgba(76, 175, 80, 0.15);
   border-color: #4CAF50;
 }
 
@@ -212,30 +221,35 @@ h2 {
 .empty {
   text-align: center;
   padding: 40px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: rgba(248, 249, 250, 0.7);
+  border-radius: 12px;
   color: #666;
+  border: 1px dashed rgba(76, 175, 80, 0.3);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 .back-home {
   display: inline-block;
-  padding: 10px 25px;
+  padding: 12px 25px;
   background: #4CAF50;
   color: white;
   text-decoration: none;
-  border-radius: 20px;
-  transition: all 0.2s;
+  border-radius: 30px;
+  transition: all 0.3s;
   margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .back-home:hover {
   background: #45a049;
   transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 768px) {
   .category-page {
     padding: 15px;
+    margin: 10px;
   }
   
   .content {
@@ -244,6 +258,17 @@ h2 {
   
   .page-title {
     font-size: 20px;
+  }
+  
+  .category-grid,
+  .herb-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  
+  .category-card,
+  .herb-card {
+    padding: 15px;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <!-- 轮播图优化 -->
+    <!-- 轮播图 -->
     <div class="carousel-wrapper">
       <div class="carousel">
         <img 
@@ -92,7 +92,7 @@
           <div class="card-content">
             <div class="icon-wrapper">
               <svg class="feature-icon" viewBox="0 0 24 24">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                <path d="M12 22c4.56 0 8.33-3.4 8.92-7.8.09-.64-.48-1.21-1.12-1.12-4.4.59-7.8 4.36-7.8 8.92 0 .55.45 1 1 1zM5.6 10.25c0 1.38 1.12 2.5 2.5 2.5.53 0 1.01-.16 1.42-.44l-.02.19c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5l-.02-.19c.4.28.89.44 1.42.44 1.38 0 2.5-1.12 2.5-2.5 0-.53-.16-1.01-.44-1.42l.19.02c0-1.38-1.12-2.5-2.5-2.5-.53 0-1.01.16-1.42.44l.02-.19C14.5 5.12 13.38 4 12 4S9.5 5.12 9.5 6.5l.02.19c-.4-.28-.89-.44-1.42-.44-1.38 0-2.5 1.12-2.5 2.5 0 .53.16 1.01.44 1.42l-.19-.02z"/>
               </svg>
             </div>
             <h3>按种类浏览</h3>
@@ -107,7 +107,7 @@
           <div class="card-content">
             <div class="icon-wrapper">
               <svg class="feature-icon" viewBox="0 0 24 24">
-                <path d="M21 9c-1.1 0-2 .9-2 2v4H5v-4c0-1.1-.9-2-2-2s-2 .9-2 2v5c0 1.65 1.35 3 3 3h16c1.65 0 3-1.35 3-3v-5c0-1.1-.9-2-2-2z"/>
+                <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
               </svg>
             </div>
             <h3>按功效检索</h3>
@@ -122,11 +122,11 @@
           <div class="card-content">
             <div class="icon-wrapper">
               <svg class="feature-icon" viewBox="0 0 24 24">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/>
               </svg>
             </div>
             <h3>按地点浏览</h3>
-            <p>药用植物园、温室、教学楼附近等地点</p>
+            <p>教学楼、食堂、图书馆附近等地点</p>
           </div>
         </router-link>
       </div>
@@ -248,7 +248,8 @@ const searchResults = computed(() => {
 })
 
 const featuredHerbs = computed(() => {
-  return herbs.slice(0, 5)
+  // 完全随机选择5个药材
+  return [...herbs].sort(() => 0.5 - Math.random()).slice(0, 5)
 })
 
 const goToDetail = (id) => {
@@ -260,8 +261,13 @@ const goToDetail = (id) => {
 <style scoped>
 .home-container {
   max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 /* 轮播图 */
@@ -269,8 +275,9 @@ const goToDetail = (id) => {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  margin: 20px 0;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  margin: 20px 0 30px;
+  border: 5px solid #fff;
 }
 
 .carousel {
@@ -285,7 +292,7 @@ const goToDetail = (id) => {
   object-fit: cover;
   opacity: 0;
   transition: opacity 1s ease-in-out;
-  filter: brightness(0.8);
+  filter: brightness(0.85);
 }
 
 .carousel img.active {
@@ -299,15 +306,17 @@ const goToDetail = (id) => {
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
+  z-index: 10;
 }
 
 .carousel-indicators span {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .carousel-indicators span.active {
@@ -323,14 +332,16 @@ const goToDetail = (id) => {
 .search-container {
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
 }
 
 .search-box {
   position: relative;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   border-radius: 50px;
   background: #fff;
   padding: 8px;
+  border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .search-icon {
@@ -340,7 +351,7 @@ const goToDetail = (id) => {
   transform: translateY(-50%);
   width: 24px;
   height: 24px;
-  fill: #666;
+  fill: #4CAF50;
 }
 
 .search-input {
@@ -351,6 +362,7 @@ const goToDetail = (id) => {
   border-radius: 50px;
   outline: none;
   transition: all 0.3s;
+  background: transparent;
 }
 
 .search-input:focus {
@@ -361,8 +373,9 @@ const goToDetail = (id) => {
   margin-top: 16px;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
+  border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .results-list {
@@ -382,6 +395,7 @@ const goToDetail = (id) => {
 
 .result-item:hover {
   background: #f8f8f8;
+  transform: translateY(-2px);
 }
 
 .herb-thumbnail {
@@ -389,6 +403,7 @@ const goToDetail = (id) => {
   height: 60px;
   border-radius: 8px;
   object-fit: cover;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .herb-info {
@@ -418,6 +433,7 @@ const goToDetail = (id) => {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .empty-state {
@@ -433,7 +449,7 @@ const goToDetail = (id) => {
 
 /* 特色功能区块 */
 .features-section {
-  padding: 60px 0;
+  padding: 40px 0 60px;
 }
 
 .section-title {
@@ -441,6 +457,20 @@ const goToDetail = (id) => {
   font-size: 32px;
   color: #2c3e50;
   margin-bottom: 40px;
+  position: relative;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.section-title:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: rgba(76, 175, 80, 0.5);
+  border-radius: 3px;
 }
 
 .feature-grid {
@@ -458,63 +488,78 @@ const goToDetail = (id) => {
   transition: all 0.3s;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  position: relative;
 }
 
 .feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 
 .feature-card.plant-type {
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.9), rgba(200, 230, 201, 0.9));
 }
 
 .feature-card.medicinal {
-  background: linear-gradient(135deg, #fbe9e7, #ffccbc);
+  background: linear-gradient(135deg, rgba(251, 233, 231, 0.9), rgba(255, 204, 188, 0.9));
 }
 
 .feature-card.location {
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.9), rgba(200, 230, 201, 0.9));
 }
 
 .icon-wrapper {
-  background: rgba(255,255,255,0.2);
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.3);
+  width: 70px;
+  height: 70px;
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .feature-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   fill: #4CAF50;
 }
 
 .feature-card h3 {
   margin: 0 0 12px;
   color: #2c3e50;
+  font-size: 22px;
 }
 
 .feature-card p {
-  color: #666;
+  color: #555;
   line-height: 1.6;
+  font-size: 16px;
 }
 
 /* 热门药材区块 */
 .additional-section {
-  padding: 40px 0;
+  padding: 20px 0 40px;
 }
 
 .info-card {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
   padding: 30px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.info-card h3 {
+  color: #2c3e50;
+  font-size: 24px;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(76, 175, 80, 0.3);
 }
 
 .hot-herbs {
@@ -530,10 +575,12 @@ const goToDetail = (id) => {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .hot-item:hover {
   transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .hot-item img {
@@ -541,6 +588,11 @@ const goToDetail = (id) => {
   height: 180px;
   object-fit: cover;
   border-radius: 8px;
+  transition: transform 0.3s;
+}
+
+.hot-item:hover img {
+  transform: scale(1.05);
 }
 
 .hot-item span {
@@ -548,7 +600,7 @@ const goToDetail = (id) => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
   color: #fff;
   padding: 12px;
   font-weight: 500;
@@ -567,6 +619,11 @@ const goToDetail = (id) => {
 }
 
 @media (max-width: 768px) {
+  .home-container {
+    padding: 15px;
+    margin: 10px;
+  }
+  
   .carousel {
     height: 300px;
   }
@@ -587,15 +644,33 @@ const goToDetail = (id) => {
   .feature-card {
     padding: 20px;
   }
+  
+  .hot-herbs {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+  }
+  
+  .hot-item img {
+    height: 140px;
+  }
 }
+
 .mini-tag {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.hot-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 </style>

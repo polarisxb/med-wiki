@@ -17,6 +17,9 @@
           ref="mapWrapper"
           @wheel="handleWheelZoom"
           @mousedown="handleMouseDown"
+          @touchstart="handleTouchStart"
+          @touchmove="handleTouchMove"
+          @touchend="handleTouchEnd"
           :class="{ 'is-dragging': isDragging }"
       >
         <img
@@ -34,6 +37,7 @@
             class="location-marker"
             :style="getMarkerStyle(location.coords)"
             @click.stop="handleMarkerClick(location)"
+            @touchend.stop="handleMarkerClick(location)"
         >
           {{ index + 1 }} <!-- 显示标记编号 -->
         </div>
@@ -94,6 +98,13 @@ import herbsData from '@/data/herbs.json';
 const displayedHerbs = ref([]); // New ref to store herb objects for display
 const mapImage = ref(null);
 const mapWrapper = ref(null);
+
+// 触摸相关状态
+const touchStartX = ref(0);
+const touchStartY = ref(0);
+const lastTouchDistance = ref(0);
+const isTouching = ref(false);
+const isMultiTouch = ref(false);
 
 // Hardcoded coordinates based on your provided list
 // Format: { x: originalPixelX, y: originalPixelY }
@@ -419,6 +430,129 @@ const formatEffects = (effects) => {
   return [];
 };
 
+// 处理触摸开始事件
+const handleTouchStart = (event) => {
+  event.preventDefault(); // 防止页面滚动和缩放
+  
+  // 记录触摸开始的目标元素，用于检测是否点击了标记
+  const touchTarget = event.target;
+  const isMarkerClick = touchTarget.closest('.location-marker');
+  
+  // 如果点击的是标记，不进行地图拖动操作
+  if (isMarkerClick) {
+    return;
+  }
+  
+  if (event.touches.length === 1) {
+    // 单指触摸 - 准备平移
+    isTouching.value = true;
+    isMultiTouch.value = false;
+    const touch = event.touches[0];
+    touchStartX.value = touch.clientX - translateX.value;
+    touchStartY.value = touch.clientY - translateY.value;
+  } 
+  else if (event.touches.length === 2) {
+    // 双指触摸 - 准备缩放
+    isTouching.value = true;
+    isMultiTouch.value = true;
+    
+    // 计算两指之间的初始距离
+    const touch1 = event.touches[0];
+    const touch2 = event.touches[1];
+    lastTouchDistance.value = Math.hypot(
+      touch2.clientX - touch1.clientX,
+      touch2.clientY - touch1.clientY
+    );
+  }
+};
+
+// 处理触摸移动事件
+const handleTouchMove = (event) => {
+  event.preventDefault(); // 防止页面滚动和缩放
+  
+  // 如果点击的是标记，不进行地图拖动操作
+  if (event.target.closest('.location-marker')) {
+    return;
+  }
+  
+  if (!isTouching.value) return;
+  
+  if (event.touches.length === 1 && !isMultiTouch.value) {
+    // 单指移动 - 处理平移
+    const touch = event.touches[0];
+    let newTranslateX = touch.clientX - touchStartX.value;
+    let newTranslateY = touch.clientY - touchStartY.value;
+    
+    // 应用平移限制
+    translateX.value = clampTranslationX(newTranslateX);
+    translateY.value = clampTranslationY(newTranslateY);
+  } 
+  else if (event.touches.length === 2) {
+    // 双指移动 - 处理缩放
+    const touch1 = event.touches[0];
+    const touch2 = event.touches[1];
+    
+    // 计算当前两指之间的距离
+    const currentTouchDistance = Math.hypot(
+      touch2.clientX - touch1.clientX,
+      touch2.clientY - touch1.clientY
+    );
+    
+    // 计算缩放比例变化
+    const touchRatio = currentTouchDistance / lastTouchDistance.value;
+    if (touchRatio !== 0 && !isNaN(touchRatio)) {
+      let newScale = scale.value * touchRatio;
+      
+      // 限制缩放级别
+      newScale = clamp(newScale, initialScaleValue.value, initialScaleValue.value * 10);
+      
+      // 计算缩放中心点（两指中心）
+      const centerX = (touch1.clientX + touch2.clientX) / 2;
+      const centerY = (touch1.clientY + touch2.clientY) / 2;
+      
+      // 获取地图容器的位置
+      const wrapperRect = mapWrapper.value.getBoundingClientRect();
+      const mapCenterX = centerX - wrapperRect.left;
+      const mapCenterY = centerY - wrapperRect.top;
+      
+      // 根据缩放中心调整平移
+      const ratio = newScale / scale.value;
+      translateX.value = mapCenterX - (mapCenterX - translateX.value) * ratio;
+      translateY.value = mapCenterY - (mapCenterY - translateY.value) * ratio;
+      
+      // 更新缩放值
+      scale.value = newScale;
+      
+      // 更新上次触摸距离
+      lastTouchDistance.value = currentTouchDistance;
+      
+      // 重新限制平移
+      clampTranslation();
+    }
+  }
+};
+
+// 处理触摸结束事件
+const handleTouchEnd = (event) => {
+  event.preventDefault(); // 防止页面滚动和缩放
+  
+  // 检查是否点击了标记
+  const touchTarget = event.target;
+  const markerElement = touchTarget.closest('.location-marker');
+  
+  if (markerElement) {
+    // 找到对应的location数据
+    const index = parseInt(markerElement.textContent.trim()) - 1;
+    if (index >= 0 && index < locationsWithCoords.value.length) {
+      // 触发标记点击事件
+      handleMarkerClick(locationsWithCoords.value[index]);
+    }
+  }
+  
+  isTouching.value = false;
+  isMultiTouch.value = false;
+};
+
 </script>
 
 <style scoped>
@@ -427,9 +561,11 @@ const formatEffects = (effects) => {
   margin: 20px auto;
   padding: 20px;
   min-height: 70vh;
-  background-color: #f4f7f6;
+  background-color: rgba(255, 255, 255, 0.85);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .breadcrumb ol {
@@ -469,7 +605,8 @@ const formatEffects = (effects) => {
   font-size: 28px;
   margin-bottom: 25px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid rgba(76, 175, 80, 0.3);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 .map-container {
@@ -487,10 +624,11 @@ const formatEffects = (effects) => {
   max-width: 800px; /* Limit max width */
   height: 0; /* 高度设为0，使用padding-bottom来控制宽高比 */
   padding-bottom: 59.7%; /* 保持地图原始宽高比：5079/8504 ≈ 0.597 (59.7%) */
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   background-color: #ffffff; /* White background for the wrapper */
   flex-shrink: 0; /* Prevent shrinking below content size */
+  border: 5px solid #fff;
 }
 
 .map-wrapper.is-dragging {
@@ -507,14 +645,15 @@ const formatEffects = (effects) => {
 
 .location-info {
   flex: 1; /* Takes up 1/3 of the space */
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   min-width: 250px;
   max-width: 350px;
   max-height: 600px; /* Match map-wrapper height */
   overflow-y: auto;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .location-info h2 {
@@ -522,25 +661,33 @@ const formatEffects = (effects) => {
   font-size: 18px;
   margin-bottom: 15px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 .reset-button {
   display: block;
   width: 100%;
-  padding: 10px 15px;
+  padding: 12px 15px;
   margin-bottom: 20px;
   background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .reset-button:hover {
   background-color: #388e3c;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.reset-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .herb-list {
@@ -552,12 +699,12 @@ const formatEffects = (effects) => {
 .herb-card {
   background: #ffffff; /* White background for card */
   border: 1px solid #e0e0e0; /* Light grey border */
-  border-radius: 8px; /* Rounded corners */
+  border-radius: 12px; /* Rounded corners */
   padding: 15px; /* Increased padding */
   text-decoration: none; /* Remove underline */
   color: #333; /* Default text color */
   transition: all 0.2s ease-in-out; /* Smooth transition */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Slight shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Slight shadow */
   cursor: pointer; /* Indicate clickable */
 
   display: flex; /* Use flexbox for layout */
@@ -567,22 +714,23 @@ const formatEffects = (effects) => {
 
 .herb-card:hover {
   background: #f9f9f9; /* Slightly darker background on hover */
-  border-color: #d5d5d5; /* Darker border on hover */
+  border-color: #4CAF50; /* Green border on hover */
   transform: translateY(-3px); /* Lift effect */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* More prominent shadow on hover */
+  box-shadow: 0 8px 15px rgba(76, 175, 80, 0.15); /* More prominent shadow on hover */
 }
 
 /* 新增的图片容器样式 */
 .herb-image-wrapper {
   width: 60px;
   height: 60px;
-  border-radius: 4px;
+  border-radius: 8px;
   flex-shrink: 0;
   overflow: hidden; /* 确保图片不会溢出容器 */
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #e0e0e0; /* 默认背景色，如果图片加载失败或没有图片 */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .herb-thumbnail {
@@ -625,20 +773,22 @@ const formatEffects = (effects) => {
 .effect-tag {
   background-color: #e8f5e9; /* Light green background */
   color: #388e3c; /* Dark green text */
-  padding: 3px 8px; /* Padding */
-  border-radius: 12px; /* Pill shape */
+  padding: 4px 10px; /* Padding */
+  border-radius: 20px; /* Pill shape */
   font-size: 12px; /* Smaller font size */
   font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .empty-state {
   color: #666;
   text-align: center;
-  padding: 20px;
-  border: 1px dashed #ccc;
-  border-radius: 8px;
-  background-color: #fcfcfc;
-  font-size: 14px;
+  padding: 30px;
+  border: 1px dashed rgba(76, 175, 80, 0.3);
+  border-radius: 12px;
+  background-color: rgba(252, 252, 252, 0.8);
+  font-size: 15px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 .location-marker {
@@ -649,7 +799,7 @@ const formatEffects = (effects) => {
   border-radius: 50%; /* Make it a circle */
   border: 2px solid white;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -657,12 +807,13 @@ const formatEffects = (effects) => {
   font-size: 12px; /* Adjust font size */
   font-weight: bold;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Add shadow for better visibility */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add shadow for better visibility */
 }
 
 .location-marker:hover {
   background-color: rgba(76, 175, 80, 1); /* Full opacity on hover */
-  transform: scale(1.1); /* Slightly larger on hover */
+  transform: scale(1.2) translateY(-2px); /* Slightly larger on hover */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -675,8 +826,16 @@ const formatEffects = (effects) => {
     flex: none;
     width: 100%;
     max-width: 100%;
-    height: 400px;
-    max-height: none;
+  }
+  
+  .map-wrapper {
+    padding-bottom: 75%; /* 在移动端调整宽高比，使地图更容易查看 */
+    touch-action: none; /* 防止浏览器默认的触摸行为 */
+  }
+  
+  .location-info {
+    max-height: 400px;
+    overflow-y: auto;
   }
 
   .location-category-page {
@@ -686,6 +845,12 @@ const formatEffects = (effects) => {
 
   .page-title {
     font-size: 24px;
+  }
+  
+  .location-marker {
+    width: 30px; /* 在移动端增大标记尺寸，便于点击 */
+    height: 30px;
+    font-size: 14px;
   }
 }
 </style>
